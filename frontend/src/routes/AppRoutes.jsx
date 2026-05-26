@@ -6,6 +6,7 @@ import Register from "../pages/shared/Register.jsx";
 import Unauthorized from "../pages/shared/Unauthorized.jsx";
 import Dashboard from "../pages/shared/Dashboard.jsx";
 import ResourcePage from "../pages/shared/ResourcePage.jsx";
+import ParentChildren from "../pages/shared/ParentChildren.jsx";
 import { dashboardByRole } from "../auth/roles";
 import { useAuth } from "../auth/AuthContext.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -51,8 +52,7 @@ export default function AppRoutes() {
 
           <Route element={<RoleBasedRoute allowedRoles={["parent"]} />}>
             <Route path="/parent/dashboard" element={<Dashboard role="parent" />} />
-            <Route path="/parent/children" element={<ResourcePage title="Children" resource="users" />} />
-            <Route path="/parent/child-performance" element={<ResourcePage title="Child Performance" resource="submissions" />} />
+            <Route path="/parent/children" element={<ParentChildren />} />
             <Route path="/parent/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
           </Route>
 
