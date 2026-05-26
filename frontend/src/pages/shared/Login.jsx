@@ -28,21 +28,50 @@ export default function Login() {
 
   return (
     <main className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="eyebrow">School Collaboration Portal</p>
-        <h1>Sign in</h1>
-        {error && <div className="error-box">{error}</div>}
-        <label>
-          Email
-          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
-        </label>
-        <label>
-          Password
-          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required />
-        </label>
-        <button disabled={loading}>{loading ? "Signing in..." : "Sign in"}</button>
-        <a href="/register">Create a training account</a>
-      </form>
+      <div className="auth-page-content">
+        <h2>Welcome Back</h2>
+        <p>Access your school collaboration portal to manage assignments, connect with students and parents, and streamline communication.</p>
+      </div>
+      <div className="auth-card-wrap">
+        <form className="auth-card" onSubmit={handleSubmit}>
+          <div>
+            <p className="eyebrow">School Collaboration Portal</p>
+            <h1>Sign in</h1>
+          </div>
+
+          {error && <div className="error-box">{error}</div>}
+
+          <label>
+            Email address
+            <input 
+              value={email} 
+              onChange={(event) => setEmail(event.target.value)} 
+              type="email" 
+              placeholder="you@example.com"
+              required 
+              disabled={loading}
+            />
+          </label>
+
+          <label>
+            Password
+            <input 
+              value={password} 
+              onChange={(event) => setPassword(event.target.value)} 
+              type="password" 
+              placeholder="••••••••"
+              required 
+              disabled={loading}
+            />
+          </label>
+
+          <button disabled={loading} type="submit">
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+
+          <a href="/register">Don't have an account? Create one</a>
+        </form>
+      </div>
     </main>
   );
 }

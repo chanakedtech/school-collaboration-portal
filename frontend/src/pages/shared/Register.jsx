@@ -40,39 +40,87 @@ export default function Register() {
 
   return (
     <main className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="eyebrow">Training account</p>
-        <h1>Register</h1>
-        {error && <div className="error-box">{error}</div>}
-        {message && <div className="success-box">{message}</div>}
-        <label>
-          First name
-          <input name="first_name" value={form.first_name} onChange={updateField} required disabled={loading} />
-        </label>
-        <label>
-          Last name
-          <input name="last_name" value={form.last_name} onChange={updateField} required disabled={loading} />
-        </label>
-        <label>
-          Email
-          <input name="email" type="email" value={form.email} onChange={updateField} required disabled={loading} />
-        </label>
-        <label>
-          Role
-          <select name="role" value={form.role} onChange={updateField} disabled={loading}>
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-            <option value="class_teacher">Class Teacher</option>
-            <option value="parent">Parent</option>
-          </select>
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" value={form.password} onChange={updateField} required disabled={loading} />
-        </label>
-        <button disabled={loading}>{loading ? "Creating account..." : "Create account"}</button>
-        <a href="/login">Back to login</a>
-      </form>
+      <div className="auth-page-content">
+        <h2>Join Us</h2>
+        <p>Create your account to get started with the School Collaboration Portal. Sign up as a student, teacher, parent, or administrator.</p>
+      </div>
+      <div className="auth-card-wrap">
+        <form className="auth-card" onSubmit={handleSubmit}>
+          <div>
+            <p className="eyebrow">Create Account</p>
+            <h1>Register</h1>
+          </div>
+
+          {error && <div className="error-box">{error}</div>}
+          {message && <div className="success-box">{message}</div>}
+
+          <label>
+            First name
+            <input 
+              name="first_name" 
+              value={form.first_name} 
+              onChange={updateField} 
+              placeholder="John"
+              required 
+              disabled={loading} 
+            />
+          </label>
+
+          <label>
+            Last name
+            <input 
+              name="last_name" 
+              value={form.last_name} 
+              onChange={updateField} 
+              placeholder="Doe"
+              required 
+              disabled={loading} 
+            />
+          </label>
+
+          <label>
+            Email address
+            <input 
+              name="email" 
+              type="email" 
+              value={form.email} 
+              onChange={updateField} 
+              placeholder="you@example.com"
+              required 
+              disabled={loading} 
+            />
+          </label>
+
+          <label>
+            Role
+            <select name="role" value={form.role} onChange={updateField} disabled={loading}>
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+              <option value="class_teacher">Class Teacher</option>
+              <option value="parent">Parent</option>
+            </select>
+          </label>
+
+          <label>
+            Password
+            <input 
+              name="password" 
+              type="password" 
+              value={form.password} 
+              onChange={updateField} 
+              placeholder="••••••••"
+              required 
+              disabled={loading} 
+            />
+          </label>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating account..." : "Create account"}
+          </button>
+
+          <a href="/login">Already have an account? Sign in</a>
+        </form>
+      </div>
     </main>
   );
 }
