@@ -1,38 +1,30 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { GraduationCap, Eye, EyeOff } from "lucide-react";
 
-import { useAuth } from "../../auth/AuthContext.jsx";
-import { dashboardByRole } from "../../auth/roles";
 import api from "../../api/client";
 
 export default function Register() {
   const [form, setForm] = useState({ first_name: "", last_name: "", email: "", password: "", role: "student" });
+  const [showPw, setShowPw] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
-  function updateField(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
+  function updateField(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
     try {
-      // Register the user
       await api.post("/auth/register/", form);
-      
-      // Automatically log in the user
-      const user = await login(form.email, form.password);
-      
-      // Navigate to dashboard based on role
-      navigate(dashboardByRole[user.role] || "/profile");
-    } catch (err) {
-      setError(err.response?.data?.detail || "Registration failed. Please try again.");
+      setMessage("Account created! You can now sign in.");
+    } catch {
+      setError("Registration failed. Please check your details and try again.");
     } finally {
       setLoading(false);
     }
@@ -40,60 +32,41 @@ export default function Register() {
 
   return (
     <main className="auth-page">
-      <div className="auth-page-content">
-        <h2>Join Us</h2>
-        <p>Create your account to get started with the School Collaboration Portal. Sign up as a student, teacher, parent, or administrator.</p>
+      <div className="auth-brand-panel">
+        <div className="brand-logo"><GraduationCap size={28} /> SchoolPortal</div>
+        <p className="brand-tagline">
+          A collaborative platform connecting students, teachers, parents, and administrators in one place.
+        </p>
       </div>
-      <div className="auth-card-wrap">
+
+      <div className="auth-form-panel">
         <form className="auth-card" onSubmit={handleSubmit}>
           <div>
-            <p className="eyebrow">Create Account</p>
-            <h1>Register</h1>
+            <p className="eyebrow">Training account</p>
+            <h1>Create account</h1>
           </div>
 
-          {error && <div className="error-box">{error}</div>}
           {message && <div className="success-box">{message}</div>}
+          {error && <div className="error-box">{error}</div>}
 
           <label>
             First name
-            <input 
-              name="first_name" 
-              value={form.first_name} 
-              onChange={updateField} 
-              placeholder="John"
-              required 
-              disabled={loading} 
-            />
+            <input name="first_name" value={form.first_name} onChange={updateField} required autoComplete="given-name" />
           </label>
 
           <label>
             Last name
-            <input 
-              name="last_name" 
-              value={form.last_name} 
-              onChange={updateField} 
-              placeholder="Doe"
-              required 
-              disabled={loading} 
-            />
+            <input name="last_name" value={form.last_name} onChange={updateField} required autoComplete="family-name" />
           </label>
 
           <label>
-            Email address
-            <input 
-              name="email" 
-              type="email" 
-              value={form.email} 
-              onChange={updateField} 
-              placeholder="you@example.com"
-              required 
-              disabled={loading} 
-            />
+            Email
+            <input name="email" type="email" value={form.email} onChange={updateField} required autoComplete="email" />
           </label>
 
           <label>
             Role
-            <select name="role" value={form.role} onChange={updateField} disabled={loading}>
+            <select name="role" value={form.role} onChange={updateField}>
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
               <option value="class_teacher">Class Teacher</option>
@@ -103,25 +76,28 @@ export default function Register() {
 
           <label>
             Password
-            <input 
-              name="password" 
-              type="password" 
-              value={form.password} 
-              onChange={updateField} 
-              placeholder="••••••••"
-              required 
-              disabled={loading} 
-            />
+            <div className="input-wrap">
+              <input
+                name="password"
+                type={showPw ? "text" : "password"}
+                value={form.password}
+                onChange={updateField}
+                required
+                autoComplete="new-password"
+              />
+              <button type="button" className="toggle-pw" onClick={() => setShowPw((v) => !v)} aria-label="Toggle password">
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </label>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Creating account..." : "Create account"}
-          </button>
+          <button type="submit" disabled={loading}>{loading ? "Creating account…" : "Create account"}</button>
 
-          <a href="/login">Already have an account? Sign in</a>
+          <p className="auth-footer">
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
         </form>
       </div>
     </main>
   );
 }
-
