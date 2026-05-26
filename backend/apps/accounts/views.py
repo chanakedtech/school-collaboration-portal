@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, viewsets
 from rest_framework.response import Response
 
-from .permissions import IsPlatformAdmin
+from .permissions import IsPlatformAdmin, UserManagementPermission
 from .serializers import RegisterSerializer, UserSerializer
 
 User = get_user_model()
@@ -22,6 +22,7 @@ class CurrentUserView(generics.RetrieveAPIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
+    permission_classes = [UserManagementPermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -30,11 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.role == "school_admin":
             return User.objects.select_related("school").filter(school=user.school)
         return User.objects.select_related("school").filter(id=user.id)
-
-    def get_permissions(self):
-        if self.action == "destroy":
-            return [IsPlatformAdmin()]
-        return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
         user = self.request.user

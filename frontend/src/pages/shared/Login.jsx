@@ -29,19 +29,25 @@ export default function Login() {
   return (
     <main className="auth-page">
       <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="eyebrow">School Collaboration Portal</p>
-        <h1>Sign in</h1>
+        <div className="auth-brand">
+          <span className="auth-brand-icon">🏫</span>
+          <span className="auth-brand-name">SchoolPortal</span>
+        </div>
+        <h1>Welcome back</h1>
+        <p className="auth-subtitle">Sign in to your account to continue</p>
         {error && <div className="error-box">{error}</div>}
         <label>
-          Email
-          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
+          Email address
+          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required autoComplete="email" />
         </label>
         <label>
           Password
-          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required />
+          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required autoComplete="current-password" />
         </label>
-        <button disabled={loading}>{loading ? "Signing in..." : "Sign in"}</button>
-        <a href="/register">Create a training account</a>
+        <button disabled={loading}>
+          {loading ? <span className="btn-loading"><span className="spinner spinner--sm" />Signing in…</span> : "Sign in"}
+        </button>
+        <p className="auth-footer">New here? <a href="/register">Create a training account</a></p>
       </form>
     </main>
   );
