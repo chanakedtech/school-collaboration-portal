@@ -47,7 +47,14 @@ frontend/
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate
+```
+
+Activate the virtual environment:
+
+- Windows: `.venv\Scripts\activate`
+- macOS/Linux: `source .venv/bin/activate`
+
+```bash
 pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
@@ -56,6 +63,8 @@ python manage.py runserver
 ```
 
 Backend API runs at `http://127.0.0.1:8000/api/`.
+
+> If you see `ModuleNotFoundError` for any package, make sure your virtual environment is active before running `pip install`.
 
 ### Frontend
 
