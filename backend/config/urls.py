@@ -7,6 +7,7 @@ from apps.core.views import (
     AnnouncementViewSet,
     AssignmentViewSet,
     ClassRoomViewSet,
+    ParentChildrenView,
     SchoolViewSet,
     SubjectViewSet,
     SubmissionViewSet,
@@ -28,6 +29,7 @@ urlpatterns = [
     path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/auth/me/", CurrentUserView.as_view(), name="current_user"),
+    path("api/parent/children/", ParentChildrenView.as_view(), name="parent_children"),
     path("api/", include(router.urls)),
 ]
 

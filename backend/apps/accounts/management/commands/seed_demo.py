@@ -9,6 +9,41 @@ from apps.core.models import Announcement, Assignment, ClassRoom, ParentProfile,
 User = get_user_model()
 PASSWORD = "Password123!"
 
+# Uganda O-Level curriculum subjects per class
+S1_SUBJECTS = [
+    ("Mathematics", "MATH-S1"),
+    ("English Language", "ENG-S1"),
+    ("Biology", "BIO-S1"),
+    ("Chemistry", "CHEM-S1"),
+    ("Physics", "PHY-S1"),
+    ("History", "HIST-S1"),
+    ("Geography", "GEO-S1"),
+    ("Christian Religious Education", "CRE-S1"),
+    ("Islamic Religious Education", "IRE-S1"),
+    ("Agriculture", "AGRIC-S1"),
+    ("Computer Studies", "COMP-S1"),
+    ("Fine Art", "ART-S1"),
+    ("Music", "MUS-S1"),
+    ("Physical Education", "PE-S1"),
+]
+
+S2_SUBJECTS = [
+    ("Mathematics", "MATH-S2"),
+    ("English Language", "ENG-S2"),
+    ("Biology", "BIO-S2"),
+    ("Chemistry", "CHEM-S2"),
+    ("Physics", "PHY-S2"),
+    ("History", "HIST-S2"),
+    ("Geography", "GEO-S2"),
+    ("Christian Religious Education", "CRE-S2"),
+    ("Islamic Religious Education", "IRE-S2"),
+    ("Agriculture", "AGRIC-S2"),
+    ("Computer Studies", "COMP-S2"),
+    ("Fine Art", "ART-S2"),
+    ("Music", "MUS-S2"),
+    ("Physical Education", "PE-S2"),
+]
+
 
 class Command(BaseCommand):
     help = "Create demo data for local training and onboarding."
@@ -55,14 +90,28 @@ class Command(BaseCommand):
             parent_profile, _ = ParentProfile.objects.get_or_create(user=parent_user)
             parent_profile.children.set(students[index - 1 : index + 1])
 
-        math, _ = Subject.objects.get_or_create(school=school, code="MATH-S1", defaults={"name": "Mathematics", "teacher": teacher_one, "classroom": senior_one})
-        eng, _ = Subject.objects.get_or_create(school=school, code="ENG-S1", defaults={"name": "English", "teacher": class_teacher, "classroom": senior_one})
-        sci, _ = Subject.objects.get_or_create(school=school, code="SCI-S2", defaults={"name": "Science", "teacher": teacher_two, "classroom": senior_two})
-        hist, _ = Subject.objects.get_or_create(school=school, code="HIST-S2", defaults={"name": "History", "teacher": teacher_one, "classroom": senior_two})
+        # Rotate teachers across subjects
+        teachers = [teacher_one, teacher_two, class_teacher]
+        s1_subjects = []
+        for i, (name, code) in enumerate(S1_SUBJECTS):
+            subj, _ = Subject.objects.get_or_create(
+                school=school, code=code,
+                defaults={"name": name, "teacher": teachers[i % len(teachers)], "classroom": senior_one},
+            )
+            s1_subjects.append(subj)
 
-        for index, subject in enumerate([math, eng, sci, hist, math], start=1):
+        s2_subjects = []
+        for i, (name, code) in enumerate(S2_SUBJECTS):
+            subj, _ = Subject.objects.get_or_create(
+                school=school, code=code,
+                defaults={"name": name, "teacher": teachers[i % len(teachers)], "classroom": senior_two},
+            )
+            s2_subjects.append(subj)
+
+        # Demo assignments — one per first 5 subjects in each class
+        for index, subject in enumerate(s1_subjects[:5] + s2_subjects[:5], start=1):
             Assignment.objects.get_or_create(
-                title=f"Demo Assignment {index}",
+                title=f"Demo Assignment {index} — {subject.name}",
                 subject=subject,
                 defaults={
                     "description": "Complete the task and submit your response before the due date.",
@@ -100,4 +149,3 @@ class Command(BaseCommand):
             user.set_password(PASSWORD)
             user.save()
         return user
-

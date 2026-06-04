@@ -1,11 +1,20 @@
-from rest_framework import decorators, permissions, response, status, viewsets
+from rest_framework import decorators, generics, permissions, response, status, viewsets
 
-from apps.accounts.permissions import IsPlatformAdmin, SchoolScopedPermission
+from apps.accounts.permissions import (
+    AnnouncementPermission,
+    AssignmentPermission,
+    GradePermission,
+    IsPlatformAdmin,
+    IsParent,
+    SchoolScopedPermission,
+    SubmissionPermission,
+)
 
 from .models import Announcement, Assignment, ClassRoom, School, Subject, Submission
 from .serializers import (
     AnnouncementSerializer,
     AssignmentSerializer,
+    ChildDetailSerializer,
     ClassRoomSerializer,
     GradeSubmissionSerializer,
     SchoolSerializer,
@@ -42,14 +51,12 @@ class SubjectViewSet(SchoolScopedViewSet):
 
     def get_queryset(self):
         queryset = Subject.objects.select_related("school", "teacher", "classroom")
-        user = self.request.user
-        if user.role in ["teacher", "class_teacher"]:
-            queryset = queryset.filter(teacher=user)
         return self.school_queryset(queryset)
 
 
 class AssignmentViewSet(SchoolScopedViewSet):
     serializer_class = AssignmentSerializer
+    permission_classes = [AssignmentPermission]
 
     def get_queryset(self):
         queryset = Assignment.objects.select_related("subject", "subject__school", "teacher")
@@ -61,7 +68,9 @@ class AssignmentViewSet(SchoolScopedViewSet):
         if user.role == "parent" and hasattr(user, "parent_profile"):
             classrooms = user.parent_profile.children.values_list("classroom_id", flat=True)
             queryset = queryset.filter(subject__classroom_id__in=classrooms)
-        return self.school_queryset(queryset)
+        if user.role != "platform_admin":
+            queryset = queryset.filter(subject__school=user.school)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)
@@ -69,6 +78,7 @@ class AssignmentViewSet(SchoolScopedViewSet):
 
 class SubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = SubmissionSerializer
+    permission_classes = [SubmissionPermission]
 
     def get_queryset(self):
         queryset = Submission.objects.select_related("assignment", "assignment__subject", "student")
@@ -89,19 +99,30 @@ class SubmissionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
 
-    @decorators.action(detail=True, methods=["patch"], permission_classes=[permissions.IsAuthenticated], serializer_class=GradeSubmissionSerializer)
+    @decorators.action(detail=True, methods=["patch"], permission_classes=[GradePermission], serializer_class=GradeSubmissionSerializer)
     def grade(self, request, pk=None):
         submission = self.get_object()
-        if request.user.role not in ["teacher", "class_teacher"]:
-            return response.Response({"detail": "Only teachers can grade submissions."}, status=status.HTTP_403_FORBIDDEN)
         serializer = GradeSubmissionSerializer(submission, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return response.Response(SubmissionSerializer(submission).data)
 
 
+class ParentChildrenView(generics.ListAPIView):
+    serializer_class = ChildDetailSerializer
+    permission_classes = [IsParent]
+
+    def get_queryset(self):
+        from apps.core.models import StudentProfile
+        parent_profile = getattr(self.request.user, "parent_profile", None)
+        if not parent_profile:
+            return StudentProfile.objects.none()
+        return parent_profile.children.select_related("user", "classroom").all()
+
+
 class AnnouncementViewSet(SchoolScopedViewSet):
     serializer_class = AnnouncementSerializer
+    permission_classes = [AnnouncementPermission]
 
     def get_queryset(self):
         queryset = Announcement.objects.select_related("school", "classroom", "subject", "created_by")

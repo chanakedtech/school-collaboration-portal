@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import api from "../../api/client";
 import DataTable from "../../components/DataTable.jsx";
+import EmptyState from "../../components/EmptyState.jsx";
+import Spinner from "../../components/Spinner.jsx";
 
 export default function ResourcePage({ title, resource }) {
   const [rows, setRows] = useState([]);
@@ -30,9 +32,10 @@ export default function ResourcePage({ title, resource }) {
         <p className="eyebrow">Workspace</p>
         <h2>{title}</h2>
       </div>
-      {loading && <div className="empty-state">Loading...</div>}
+      {loading && <Spinner />}
       {error && <div className="error-box">{error}</div>}
-      {!loading && !error && <DataTable rows={rows} />}
+      {!loading && !error && rows.length === 0 && <EmptyState />}
+      {!loading && !error && rows.length > 0 && <DataTable rows={rows} />}
     </section>
   );
 }

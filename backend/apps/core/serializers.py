@@ -28,6 +28,44 @@ class SubjectSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ChildSubmissionSerializer(serializers.ModelSerializer):
+    assignment_title = serializers.CharField(source="assignment.title", read_only=True)
+
+    class Meta:
+        model = Submission
+        fields = ["id", "assignment", "assignment_title", "answer_text", "grade", "feedback", "submitted_at"]
+
+
+class ChildAssignmentSerializer(serializers.ModelSerializer):
+    subject_name = serializers.CharField(source="subject.name", read_only=True)
+    submission = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assignment
+        fields = ["id", "title", "description", "due_date", "subject", "subject_name", "submission"]
+
+    def get_submission(self, obj):
+        student_id = self.context.get("student_id")
+        sub = obj.submissions.filter(student_id=student_id).first()
+        return ChildSubmissionSerializer(sub).data if sub else None
+
+
+class ChildDetailSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source="user.get_full_name", read_only=True)
+    classroom_name = serializers.CharField(source="classroom.name", read_only=True)
+    assignments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StudentProfile
+        fields = ["id", "user", "student_name", "admission_number", "classroom", "classroom_name", "assignments"]
+
+    def get_assignments(self, obj):
+        assignments = Assignment.objects.filter(
+            subject__classroom=obj.classroom
+        ).select_related("subject").prefetch_related("submissions")
+        return ChildAssignmentSerializer(assignments, many=True, context={"student_id": obj.user_id}).data
+
+
 class StudentProfileSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source="user.get_full_name", read_only=True)
 
@@ -61,6 +99,17 @@ class SubmissionSerializer(serializers.ModelSerializer):
         model = Submission
         fields = "__all__"
         read_only_fields = ["student", "submitted_at"]
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        if request:
+            assignment = attrs.get("assignment")
+            if assignment and hasattr(request.user, "school_id"):
+                if assignment.subject.school_id != request.user.school_id:
+                    raise serializers.ValidationError({"assignment": "Assignment does not belong to your school."})
+            if assignment and Submission.objects.filter(assignment=assignment, student=request.user).exists():
+                raise serializers.ValidationError({"assignment": "You have already submitted this assignment."})
+        return attrs
 
 
 class GradeSubmissionSerializer(serializers.ModelSerializer):

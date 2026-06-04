@@ -1,6 +1,8 @@
+import EmptyState from "./EmptyState.jsx";
+
 export default function DataTable({ rows }) {
   if (!rows?.length) {
-    return <div className="empty-state">No records found yet.</div>;
+    return <EmptyState />;
   }
 
   const columns = Object.keys(rows[0]).slice(0, 6);
