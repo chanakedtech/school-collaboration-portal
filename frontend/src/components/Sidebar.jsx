@@ -24,8 +24,7 @@ const navByRole = {
   ],
   parent: [
     ["Dashboard", "/parent/dashboard", Home],
-    ["Children", "/parent/children", Users],
-    ["Performance", "/parent/child-performance", GraduationCap],
+    ["My Children", "/parent/children", Users],
     ["Announcements", "/parent/announcements", Bell],
   ],
   school_admin: [
