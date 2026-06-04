@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import api from "../../api/client";
 import DataTable from "../../components/DataTable.jsx";
+import LoadingState from "../../components/LoadingState.jsx";
 
 export default function ResourcePage({ title, resource }) {
   const [rows, setRows] = useState([]);
@@ -30,7 +31,7 @@ export default function ResourcePage({ title, resource }) {
         <p className="eyebrow">Workspace</p>
         <h2>{title}</h2>
       </div>
-      {loading && <div className="empty-state">Loading...</div>}
+      {loading && <LoadingState />}
       {error && <div className="error-box">{error}</div>}
       {!loading && !error && <DataTable rows={rows} />}
     </section>
