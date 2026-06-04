@@ -6,6 +6,7 @@ import Register from "../pages/shared/Register.jsx";
 import Unauthorized from "../pages/shared/Unauthorized.jsx";
 import Dashboard from "../pages/shared/Dashboard.jsx";
 import ResourcePage from "../pages/shared/ResourcePage.jsx";
+import SubmitAssignmentPage from "../pages/shared/SubmitAssignmentPage.jsx";
 import { dashboardByRole } from "../auth/roles";
 import { useAuth } from "../auth/AuthContext.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -32,6 +33,7 @@ export default function AppRoutes() {
           <Route element={<RoleBasedRoute allowedRoles={["student"]} />}>
             <Route path="/student/dashboard" element={<Dashboard role="student" />} />
             <Route path="/student/assignments" element={<ResourcePage title="Assignments" resource="assignments" />} />
+            <Route path="/student/assignments/:id/submit" element={<SubmitAssignmentPage />} />
             <Route path="/student/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
           </Route>
 
