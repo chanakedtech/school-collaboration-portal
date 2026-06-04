@@ -61,7 +61,9 @@ class AssignmentViewSet(SchoolScopedViewSet):
         if user.role == "parent" and hasattr(user, "parent_profile"):
             classrooms = user.parent_profile.children.values_list("classroom_id", flat=True)
             queryset = queryset.filter(subject__classroom_id__in=classrooms)
-        return self.school_queryset(queryset)
+        if user.role != "platform_admin":
+            queryset = queryset.filter(subject__school=user.school)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)
