@@ -6,6 +6,7 @@ import Register from "../pages/shared/Register.jsx";
 import Unauthorized from "../pages/shared/Unauthorized.jsx";
 import Dashboard from "../pages/shared/Dashboard.jsx";
 import ResourcePage from "../pages/shared/ResourcePage.jsx";
+import AnnouncementsPage from "../pages/shared/AnnouncementsPage.jsx";
 import { dashboardByRole } from "../auth/roles";
 import { useAuth } from "../auth/AuthContext.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -32,7 +33,7 @@ export default function AppRoutes() {
           <Route element={<RoleBasedRoute allowedRoles={["student"]} />}>
             <Route path="/student/dashboard" element={<Dashboard role="student" />} />
             <Route path="/student/assignments" element={<ResourcePage title="Assignments" resource="assignments" />} />
-            <Route path="/student/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
+            <Route path="/student/announcements" element={<AnnouncementsPage />} />
           </Route>
 
           <Route element={<RoleBasedRoute allowedRoles={["teacher"]} />}>
@@ -46,14 +47,14 @@ export default function AppRoutes() {
             <Route path="/class-teacher/dashboard" element={<Dashboard role="class_teacher" />} />
             <Route path="/class-teacher/students" element={<ResourcePage title="Students" resource="users" />} />
             <Route path="/class-teacher/parents" element={<ResourcePage title="Parents" resource="users" />} />
-            <Route path="/class-teacher/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
+            <Route path="/class-teacher/announcements" element={<AnnouncementsPage />} />
           </Route>
 
           <Route element={<RoleBasedRoute allowedRoles={["parent"]} />}>
             <Route path="/parent/dashboard" element={<Dashboard role="parent" />} />
             <Route path="/parent/children" element={<ResourcePage title="Children" resource="users" />} />
             <Route path="/parent/child-performance" element={<ResourcePage title="Child Performance" resource="submissions" />} />
-            <Route path="/parent/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
+            <Route path="/parent/announcements" element={<AnnouncementsPage />} />
           </Route>
 
           <Route element={<RoleBasedRoute allowedRoles={["school_admin"]} />}>
@@ -61,7 +62,7 @@ export default function AppRoutes() {
             <Route path="/school-admin/users" element={<ResourcePage title="Users" resource="users" />} />
             <Route path="/school-admin/classes" element={<ResourcePage title="Classes" resource="classes" />} />
             <Route path="/school-admin/subjects" element={<ResourcePage title="Subjects" resource="subjects" />} />
-            <Route path="/school-admin/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
+            <Route path="/school-admin/announcements" element={<AnnouncementsPage />} />
           </Route>
 
           <Route element={<RoleBasedRoute allowedRoles={["platform_admin"]} />}>
