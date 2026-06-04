@@ -6,6 +6,7 @@ import Register from "../pages/shared/Register.jsx";
 import Unauthorized from "../pages/shared/Unauthorized.jsx";
 import Dashboard from "../pages/shared/Dashboard.jsx";
 import ResourcePage from "../pages/shared/ResourcePage.jsx";
+import AssignmentCreatePage from "../pages/shared/AssignmentCreatePage.jsx";
 import { dashboardByRole } from "../auth/roles";
 import { useAuth } from "../auth/AuthContext.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -39,6 +40,7 @@ export default function AppRoutes() {
             <Route path="/teacher/dashboard" element={<Dashboard role="teacher" />} />
             <Route path="/teacher/subjects" element={<ResourcePage title="Subjects" resource="subjects" />} />
             <Route path="/teacher/assignments" element={<ResourcePage title="Assignments" resource="assignments" />} />
+            <Route path="/teacher/assignments/new" element={<AssignmentCreatePage />} />
             <Route path="/teacher/submissions" element={<ResourcePage title="Submissions" resource="submissions" />} />
           </Route>
 
@@ -47,6 +49,7 @@ export default function AppRoutes() {
             <Route path="/class-teacher/students" element={<ResourcePage title="Students" resource="users" />} />
             <Route path="/class-teacher/parents" element={<ResourcePage title="Parents" resource="users" />} />
             <Route path="/class-teacher/announcements" element={<ResourcePage title="Announcements" resource="announcements" />} />
+            <Route path="/class-teacher/assignments/new" element={<AssignmentCreatePage />} />
           </Route>
 
           <Route element={<RoleBasedRoute allowedRoles={["parent"]} />}>
